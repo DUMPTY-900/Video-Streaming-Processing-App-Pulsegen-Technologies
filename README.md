@@ -52,8 +52,8 @@ Before you start, make sure you have:
 
 ### 1. Clone & Setup
 ```bash
-git clone <your-repo-url>
-cd video-streaming-app
+git clone https://github.com/DUMPTY-900/Video-Streaming-Processing-App-Pulsegen-Technologies
+cd Video-Streaming-Processing-App-Pulsegen-Technologies
 ```
 
 ### 2. Backend Setup
@@ -108,4 +108,4 @@ This project is configured for easy deployment on Render.
 *   **Env Vars**: Ensure you set `MONGO_URI` and `VITE_API_BASE_URL` in the respective services.
 
 ---
-*Built with ❤️ for the PulseGen Technologies Assignment.*
+
