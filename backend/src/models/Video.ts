@@ -32,7 +32,6 @@ const VideoSchema: Schema = new Schema({
         type: String,
         enum: ['safe', 'flagged', 'unknown'],
         default: 'unknown'
-        default: 'unknown'
     },
     category: { type: String, default: 'General' },
     processingProgress: { type: Number, default: 0 },
