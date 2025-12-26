@@ -1,111 +1,151 @@
-# Video Streaming & Processing Application
+# 🎥 StreamFlow - Advanced Video Streaming Platform
 
-Welcome to the **Video Streaming & Processing App**! 🎥
+StreamFlow is a full-stack MERN video streaming application designed for seamless video uploads, real-time processing, and content sensitivity analysis. It features a modern, glassmorphic UI, multi-tenant architecture, and robust role-based access control.
 
-This application is a full-stack solution designed to handle the complete lifecycle of video content—from secure upload to processing and streaming. It was built to demonstrate a modern, scalable architecture handling real-world challenges like large file uploads, real-time status updates, and role-based security.
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Status](https://img.shields.io/badge/status-complete-success.svg)
 
-## 🚀 Overview
+## 🚀 Key Features
 
-The core goal of this project is to provide a seamless platform where users can upload videos, have them automatically analyzed for sensitivity (safe/flagged), and then stream them back with an adaptive player. 
+### Core Functionality
+*   **Video Upload**: Chunk-based upload handling with `multer` supporting large files.
+*   **Real-Time Processing**: Live progress bars using **Socket.io** to track video analysis.
+*   **Content Sensitivity Analysis**: Automated keyword-based detection to flag unsafe content (Safe/Flagged).
+*   **Video Streaming**: Optimized HTTP Range Requests (`206 Partial Content`) for smooth playback.
+*   **Authentication**: Secure JWT-based auth with Role-Based Access Control (Viewer, Editor, Admin).
 
-It solves several key technical challenges:
-*   **Real-time Feedback**: Users aren't left guessing; they see a live progress bar as their video uploads, processes, and gets analyzed.
-*   **Security**: Not everyone can upload. We use a **Role-Based Access Control (RBAC)** system so only 'Editors' or 'Admins' can contribute content, while 'Viewers' can watch.
-*   **Performance**: Videos are streamed using **HTTP Range Requests**, meaning you can scrub through a video instantly without waiting for the whole file to download.
+### Advanced Features
+*   **Multi-Tenancy**: Data isolation ensuring users only see content within their tenant.
+*   **Ephemeral Storage Handling**: Robust error handling for cloud platforms with non-persistent storage (e.g., Render Free Tier).
+*   **Advanced Filtering**: Filter by Sensitivity (Safe/Flagged) and Category.
+*   **Smart Sorting**: Sort by Newest, Oldest, File Size, or Duration.
+*   **User-Defined Categories**: Tag uploads with custom categories (Gaming, Vlog, Tech, etc.).
+*   **Performance**: Implemented `Cache-Control` headers for API optimization.
 
-## ✨ Key Features
-
-*   **Secure Authentication**: JWT-based login and registration with Bcrypt password hashing.
-*   **Multi-Tenancy**: Built-in support for tenant isolation (users only see their organization's videos).
-*   **Smart Video Processing**: 
-    *   Extracts metadata (duration, format) using FFmpeg.
-    *   Simulates transcoding pipelines.
-    *   Performs content sensitivity analysis to flag inappropriate content.
-*   **Live Updates**: Powered by **Socket.io**, the dashboard updates instantly when processing completes—no page refreshes needed.
-*   **Resumable Streaming**: HTML5 video player integration that supports seeking and efficient bandwidth usage.
-*   **Robust Backend**: Node.js & Express server with MongoDB for metadata persistence.
+---
 
 ## 🛠️ Technology Stack
 
-We chose a robust **MERN-like** stack (without the 'M' being mandatory, but we used MongoDB) optimized for performance and type safety.
+| Component | Technology | Description |
+|-----------|------------|-------------|
+| **Frontend** | React + Vite | Fast, modern client-side framework |
+| **Styling** | Tailwind CSS v4 | Utility-first CSS with Glassmorphism design |
+| **Backend** | Node.js + Express | Robust REST API server |
+| **Database** | MongoDB + Mongoose | NoSQL database for metadata & user info |
+| **Real-time** | Socket.io | Bi-directional communication for updates |
+| **Storage** | Local FS (Ephemeral) | Standard filesystem storage for video files |
 
-*   **Frontend**: 
-    *   **React (Vite)**: For a blazing fast UI.
-    *   **TypeScript**: Ensures code reliability and catches errors early.
-    *   **Tailwind CSS**: For a clean, responsive, and modern aesthetic.
-    *   **Socket.io Client**: For real-time event listening.
-*   **Backend**: 
-    *   **Node.js & Express**: The backbone of our API.
-    *   **MongoDB (Mongoose)**: Flexible schema for storing users and video metadata.
-    *   **Multer**: Handles `multipart/form-data` for video uploads.
-    *   **FFmpeg**: The industry standard for video manipulation.
-    *   **Socket.io**: Handles the bi-directional communication channel.
+---
 
-## ⚙️ Prerequisites
+## ⚙️ Installation & Setup
 
-Before you start, make sure you have:
-1.  **Node.js** (v16 or higher) installed.
-2.  **MongoDB** running locally (or have a connection string for MongoDB Atlas).
-3.  **FFmpeg** installed on your system path (optional, but recommended for metadata extraction).
+### Prerequisites
+*   Node.js (v18+)
+*   MongoDB (Local or Atlas URI)
+*   Git
 
-## 🚀 Getting Started
-
-### 1. Clone & Setup
+### 1. Clone the Repository
 ```bash
-git clone https://github.com/DUMPTY-900/Video-Streaming-Processing-App-Pulsegen-Technologies
+git clone https://github.com/DUMPTY-900/Video-Streaming-Processing-App-Pulsegen-Technologies.git
 cd Video-Streaming-Processing-App-Pulsegen-Technologies
 ```
 
 ### 2. Backend Setup
-Navigate to the backend folder and install dependencies:
 ```bash
 cd backend
 npm install
 ```
-Create a `.env` file in `backend/` (or rely on defaults):
+
+Create a `.env` file in the `backend` directory:
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/video-app  # Or your Atlas URI
-JWT_SECRET=your_super_secret_key
-FRONTEND_URL=http://localhost:5173
-```
-Start the server:
-```bash
-npm run dev
+MONGO_URI=mongodb://localhost:27017/streamflow
+JWT_SECRET=your_super_secret_key_123
+UPLOAD_DIR=uploads
+CLIENT_URL=http://localhost:5173
 ```
 
 ### 3. Frontend Setup
-Open a new terminal navigate to the frontend folder:
 ```bash
-cd frontend
+cd ../frontend
 npm install
 ```
-Start the React app:
-```bash
-npm run dev
+
+Create a `.env` file in the `frontend` directory:
+```env
+VITE_API_BASE_URL=http://localhost:5000
 ```
-Visit **http://localhost:5173** in your browser.
-
-## 📖 how to Use
-
-1.  **Register a User**: 
-    *   Go to `/register`.
-    *   Select **Editor** role if you want to upload videos.
-2.  **Upload a Video**:
-    *   Click the **Upload** button on the dashboard.
-    *   Select an MP4/MOV file. Watch the progress bar!
-3.  **Watch Magic Happen**:
-    *   The status will cycle: `Uploaded` -> `Processing` -> `Processed`.
-    *   If the mock AI sensitivity detector finds it "Safe", it will be green. If "Flagged", red.
-4.  **Stream**:
-    *   Click the **Play** button on any processed video to watch it.
-
-## ☁️ Deployment (Render.com)
-
-This project is configured for easy deployment on Render.
-*   **Backend**: Deploy as a *Web Service*. Add build command `npm install && npm run build` and start command `npm start`.
-*   **Frontend**: Deploy as a *Static Site*. Add build command `npm install && npm run build` and publish directory `dist`.
-*   **Env Vars**: Ensure you set `MONGO_URI` and `VITE_API_BASE_URL` in the respective services.
 
 ---
 
+## 🏃‍♂️ Running the Application
+
+### Development Mode (Recommended)
+Run both backend and frontend in separate terminals:
+
+**Backend:**
+```bash
+cd backend
+npm run dev
+```
+
+**Frontend:**
+```bash
+cd frontend
+npm run dev
+```
+
+Access the app at `http://localhost:5173`.
+
+---
+
+## 📚 API Documentation
+
+### Videos
+
+| Method | Endpoint | Description | Access |
+|--------|----------|-------------|--------|
+| `GET` | `/api/videos` | List all videos (supports query params) | User |
+| `POST` | `/api/videos` | Upload a new video | Editor/Admin |
+| `GET` | `/api/videos/:id` | Get video metadata | User |
+| `DELETE` | `/api/videos/:id` | Delete a video | Editor/Admin |
+| `GET` | `/api/videos/:id/stream` | Stream video content | User |
+
+**Query Parameters for `/api/videos`:**
+*   `sensitivity`: `all`, `safe`, `flagged`
+*   `category`: `all`, `Gaming`, `Vlog`, etc.
+*   `sort`: `newest`, `oldest`, `size_desc`, `size_asc`, `duration_desc`
+
+### Auth
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/auth/register` | Register new user |
+| `POST` | `/api/auth/login` | Login and get JWT |
+
+---
+
+## 🏗️ Architecture Overview
+
+The application follows a **Modular Monolith** structure with clear separation of concerns:
+
+*   **`frontend/`**: Contains the React SPA. Components are split into `pages`, `components`, and `context` (for global state like Auth and Socket).
+*   **`backend/`**:
+    *   **`controllers/`**: Handles request logic.
+    *   **`models/`**: Mongoose schemas.
+    *   **`services/`**: Business logic (e.g., `processing.service.ts` for dummy FFmpeg simulation).
+    *   **`routes/`**: API route definitions.
+    *   **`middlewares/`**: Auth checks (`protect`, `authorize`) and file handling (`upload`).
+
+---
+
+## 🧪 Testing
+The application includes basic structure for testing. To run manual verification:
+1.  Register two users: one `admin` and one `viewer` (change role in Mongo Compass).
+2.  Login as Admin -> Upload Video -> Observe Progress Bar.
+3.  Login as Viewer -> Verify you can Watch but NOT Delete.
+
+---
+
+## 📝 License
+This project is open-sourced under the MIT license.
