@@ -109,3 +109,27 @@ export const streamVideo = async (req: Request, res: Response) => {
         }
     }
 };
+
+// @desc    Delete video
+// @route   DELETE /api/videos/:id
+// @access  Private (Admin/Editor)
+export const deleteVideo = async (req: Request, res: Response) => {
+    try {
+        const video = await Video.findOne({ _id: req.params.id, tenantId: req.user?.tenantId });
+
+        if (!video) {
+            return res.status(404).json({ message: 'Video not found' });
+        }
+
+        // Delete file from filesystem
+        if (fs.existsSync(video.storedPath)) {
+            fs.unlinkSync(video.storedPath);
+        }
+
+        await video.deleteOne();
+
+        res.json({ message: 'Video removed' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+};

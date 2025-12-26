@@ -63,6 +63,19 @@ const Dashboard = () => {
 
     const isEditor = user?.roles.includes('editor') || user?.roles.includes('admin');
 
+    const handleDelete = async (e: React.MouseEvent, id: string) => {
+        e.preventDefault(); // Prevent navigation
+        if (window.confirm('Are you sure you want to delete this video?')) {
+            try {
+                await api.delete(`/videos/${id}`);
+                setVideos(prev => prev.filter(v => v._id !== id));
+            } catch (err) {
+                console.error(err);
+                alert('Failed to delete video');
+            }
+        }
+    };
+
     return (
         <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-100 to-pink-100 relative overflow-hidden transition-all duration-500">
             {/* Decoration Blobs (Fixed Position) */}
@@ -131,7 +144,7 @@ const Dashboard = () => {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {videos.map((video) => (
-                            <div key={video._id} className="group bg-white/70 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 overflow-hidden hover:shadow-2xl hover:bg-white/90 transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
+                            <div key={video._id} className="group bg-white/70 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 overflow-hidden hover:shadow-2xl hover:bg-white/90 transition-all duration-300 transform hover:-translate-y-1 flex flex-col relative">
                                 {/* Thumbnail/Status Area */}
                                 <div className="aspect-video bg-slate-200 relative overflow-hidden group-hover:shadow-inner">
                                     {video.status === 'processed' ? (
@@ -168,9 +181,23 @@ const Dashboard = () => {
                                 {/* Content */}
                                 <div className="p-5 flex-1 flex flex-col">
                                     <div className="mb-3">
-                                        <h3 className="font-bold text-slate-800 text-lg line-clamp-1 group-hover:text-indigo-600 transition-colors" title={video.title}>
-                                            {video.title || 'Untitled Video'}
-                                        </h3>
+                                        <div className="flex justify-between items-start">
+                                            <h3 className="font-bold text-slate-800 text-lg line-clamp-1 group-hover:text-indigo-600 transition-colors" title={video.title}>
+                                                {video.title || 'Untitled Video'}
+                                            </h3>
+
+                                            {/* Delete Button (Only for Editors/Admins) */}
+                                            {isEditor && (
+                                                <button
+                                                    onClick={(e) => handleDelete(e, video._id)}
+                                                    className="text-slate-400 hover:text-red-500 p-1 rounded-md hover:bg-red-50 transition-colors"
+                                                    title="Delete Video"
+                                                >
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                                                </button>
+                                            )}
+                                        </div>
+
                                         <div className="text-xs text-slate-400 mt-1 flex items-center gap-1">
                                             <span>Added {new Date(video.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                         </div>
@@ -178,8 +205,8 @@ const Dashboard = () => {
 
                                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100/50">
                                         <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${video.sensitivity === 'safe' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                                                    'bg-slate-50 text-slate-500 border-slate-100'
+                                            video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                                'bg-slate-50 text-slate-500 border-slate-100'
                                             }`}>
                                             {video.sensitivity === 'safe' ? 'Safe' :
                                                 video.sensitivity === 'flagged' ? 'Flagged' : 'Pending'}
