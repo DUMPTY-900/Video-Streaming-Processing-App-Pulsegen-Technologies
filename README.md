@@ -145,6 +145,3 @@ The application includes basic structure for testing. To run manual verification
 3.  Login as Viewer -> Verify you can Watch but NOT Delete.
 
 ---
-
-## 📝 License
-This project is open-sourced under the MIT license.
