@@ -43,12 +43,15 @@ export const uploadVideo = async (req: Request, res: Response) => {
 // @access  Private
 export const getVideos = async (req: Request, res: Response) => {
     try {
-        const { sensitivity, sort } = req.query;
+        const { sensitivity, sort, category } = req.query;
 
         // Build Filter Object
         let query: any = { tenantId: req.user?.tenantId };
         if (sensitivity && sensitivity !== 'all') {
             query.sensitivity = sensitivity;
+        }
+        if (category && category !== 'all') {
+            query.category = category;
         }
 
         // Build Sort Object

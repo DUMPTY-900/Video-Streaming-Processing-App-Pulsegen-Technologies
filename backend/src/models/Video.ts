@@ -32,7 +32,9 @@ const VideoSchema: Schema = new Schema({
         type: String,
         enum: ['safe', 'flagged', 'unknown'],
         default: 'unknown'
+        default: 'unknown'
     },
+    category: { type: String, default: 'General' },
     processingProgress: { type: Number, default: 0 },
     uploader: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     tenantId: { type: String, required: true }
