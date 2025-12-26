@@ -52,8 +52,8 @@ Before you start, make sure you have:
 
 ### 1. Clone & Setup
 ```bash
-git clone <your-repo-url>
-cd video-streaming-app
+git clone [<your-repo-url>](https://github.com/DUMPTY-900/Video-Streaming-Processing-App-Pulsegen-Technologies)
+cd Video-Streaming-Processing-App-Pulsegen-Technologies
 ```
 
 ### 2. Backend Setup
@@ -65,7 +65,7 @@ npm install
 Create a `.env` file in `backend/` (or rely on defaults):
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/video-app  # Or your Atlas URI
+MONGO_URI=mongodb://localhost:27017/Video-Streaming-Processing-App-Pulsegen-Technologies  # Or your Atlas URI
 JWT_SECRET=your_super_secret_key
 FRONTEND_URL=http://localhost:5173
 ```
