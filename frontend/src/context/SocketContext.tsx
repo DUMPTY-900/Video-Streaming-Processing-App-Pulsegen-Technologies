@@ -12,31 +12,24 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [socket, setSocket] = useState<Socket | null>(null);
     const { token, user } = useAuth();
 
+    // Get API Base URL from env or fallback (remove /api if present as socket connects to root)
+    const SOCKET_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace('/api', '');
+
     useEffect(() => {
-        if (token && user) {
-            const newSocket = io('http://localhost:5000', {
-                auth: { token },
-                query: { userId: user._id }
-            });
-
-            setSocket(newSocket);
-
-            return () => {
-                newSocket.close();
-            };
-        } else {
-            if (socket) {
-                socket.close();
-                setSocket(null);
-            }
+    };
+} else {
+    if (socket) {
+        socket.close();
+        setSocket(null);
+    }
         }
     }, [token, user]);
 
-    return (
-        <SocketContext.Provider value={{ socket }}>
-            {children}
-        </SocketContext.Provider>
-    );
+return (
+    <SocketContext.Provider value={{ socket }}>
+        {children}
+    </SocketContext.Provider>
+);
 };
 
 export const useSocket = () => {
