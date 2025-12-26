@@ -23,13 +23,12 @@ const UploadModal: React.FC<UploadModalProps> = ({ onClose, onSuccess }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!file) return;
-
+        setLoading(true); // Using local var for consistent naming if refactored, but here using setUploading
         setUploading(true);
         setError('');
 
         const formData = new FormData();
-        formData.append('video', file);
+        formData.append('video', file!);
         formData.append('title', title);
         formData.append('description', description);
 
@@ -52,68 +51,113 @@ const UploadModal: React.FC<UploadModalProps> = ({ onClose, onSuccess }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
-                <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-black">
-                    <X size={24} />
-                </button>
-                <h2 className="text-2xl font-bold mb-4">Upload Video</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div
+                className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+                onClick={onClose}
+            ></div>
 
-                {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
+            {/* Modal Card */}
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative overflow-hidden transform transition-all z-10 animate-blob">
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                    <h2 className="text-xl font-bold text-gray-800">Upload Video</h2>
+                    <button
+                        onClick={onClose}
+                        className="p-1 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                    >
+                        <X size={20} />
+                    </button>
+                </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 mb-2">Video File</label>
-                        <input
-                            type="file"
-                            accept="video/*"
-                            onChange={handleFileChange}
-                            className="w-full border p-2 rounded"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label className="block text-gray-700 mb-2">Title</label>
-                        <input
-                            type="text"
-                            value={title}
-                            onChange={(e) => setTitle(e.target.value)}
-                            className="w-full border p-2 rounded"
-                            required
-                        />
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="block text-gray-700 mb-2">Description</label>
-                        <textarea
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            className="w-full border p-2 rounded"
-                            rows={3}
-                        />
-                    </div>
-
-                    {uploading ? (
-                        <div className="mb-4">
-                            <div className="flex justify-between text-sm mb-1">
-                                <span>Uploading...</span>
-                                <span>{progress}%</span>
-                            </div>
-                            <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${progress}%` }}></div>
+                <div className="p-6">
+                    {error && (
+                        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-r mb-6 flex items-start">
+                            <div className="ml-3">
+                                <p className="text-sm text-red-700 font-medium">{error}</p>
                             </div>
                         </div>
-                    ) : (
-                        <button
-                            type="submit"
-                            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
-                            disabled={!file}
-                        >
-                            Upload
-                        </button>
                     )}
-                </form>
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {/* File Drop Area (Simulated) */}
+                        <div className="group relative">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">Video File</label>
+                            <div className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${file ? 'border-indigo-400 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400 hover:bg-gray-50'
+                                }`}>
+                                <input
+                                    type="file"
+                                    accept="video/*"
+                                    onChange={handleFileChange}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                    required={!file} // Only required if no file selected yet
+                                />
+                                {file ? (
+                                    <div className="flex flex-col items-center text-indigo-700">
+                                        <div className="p-2 bg-indigo-100 rounded-full mb-2">
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                        <span className="font-medium text-sm truncate max-w-[200px]">{file.name}</span>
+                                        <span className="text-xs text-indigo-500 mt-1">Click to change</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center text-gray-500">
+                                        <svg className="w-8 h-8 mb-2 text-gray-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                        <span className="text-sm font-medium">Click to select video</span>
+                                        <span className="text-xs text-gray-400 mt-1">MP4, MOV, MKV supported</span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                            <input
+                                type="text"
+                                value={title}
+                                onChange={(e) => setTitle(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                                placeholder="Enter video title"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all resize-none"
+                                rows={3}
+                                placeholder="What's this video about?"
+                            />
+                        </div>
+
+                        {uploading ? (
+                            <div className="space-y-2 pt-2">
+                                <div className="flex justify-between text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                    <span>Uploading</span>
+                                    <span>{progress}%</span>
+                                </div>
+                                <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                    <div
+                                        className="bg-indigo-600 h-full rounded-full transition-all duration-300 ease-out shadow-[0_0_10px_rgba(79,70,229,0.4)]"
+                                        style={{ width: `${progress}%` }}
+                                    ></div>
+                                </div>
+                            </div>
+                        ) : (
+                            <button
+                                type="submit"
+                                className="w-full mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-indigo-500/30 hover:shadow-indigo-500/50 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                disabled={!file}
+                            >
+                                Start Upload
+                            </button>
+                        )}
+                    </form>
+                </div>
             </div>
         </div>
     );
