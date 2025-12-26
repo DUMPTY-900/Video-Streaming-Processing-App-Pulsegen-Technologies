@@ -54,7 +54,7 @@ const VideoPage = () => {
                             <video
                                 controls
                                 className="w-full aspect-video bg-black"
-                                src={`${API_BASE}/api/videos/${id}/stream`}
+                                src={`${API_BASE}/api/videos/${id}/stream?token=${localStorage.getItem('token')}`}
                                 poster="" // Could add a poster URL here if available
                             >
                                 Your browser does not support the video tag.
@@ -99,7 +99,7 @@ const VideoPage = () => {
                                         )}
                                         <div>
                                             <span className={`block font-bold capitalize ${video.sensitivity === 'safe' ? 'text-emerald-400' :
-                                                    video.sensitivity === 'flagged' ? 'text-rose-400' : 'text-amber-400'
+                                                video.sensitivity === 'flagged' ? 'text-rose-400' : 'text-amber-400'
                                                 }`}>
                                                 {video.sensitivity}
                                             </span>
