@@ -23,7 +23,6 @@ const UploadModal: React.FC<UploadModalProps> = ({ onClose, onSuccess }) => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true); // Using local var for consistent naming if refactored, but here using setUploading
         setUploading(true);
         setError('');
 
