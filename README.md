@@ -2,7 +2,6 @@
 
 StreamFlow is a full-stack MERN video streaming application designed for seamless video uploads, real-time processing, and content sensitivity analysis. It features a modern, glassmorphic UI, multi-tenant architecture, and robust role-based access control.
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Status](https://img.shields.io/badge/status-complete-success.svg)
 
 ## 🚀 Key Features
