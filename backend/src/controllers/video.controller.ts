@@ -79,6 +79,14 @@ export const streamVideo = async (req: Request, res: Response) => {
         }
 
         const videoPath = video.storedPath;
+
+        // Check if file actually exists (handling ephemeral storage wipes)
+        if (!fs.existsSync(videoPath)) {
+            return res.status(404).json({
+                message: 'Video file not found. It may have been deleted due to server restart (Ephemeral Storage).'
+            });
+        }
+
         const stat = fs.statSync(videoPath);
         const fileSize = stat.size;
         const range = req.headers.range;
