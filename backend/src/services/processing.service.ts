@@ -48,7 +48,7 @@ export const processVideo = async (videoId: string) => {
         io.emit('video:progress', { videoId, status: 'processing', progress: 80, message: 'Analyzing content...' });
 
         // Step 3: Sensitivity Analysis
-        const analysis = await analyzeVideoContent(video.storedPath);
+        const analysis = await analyzeVideoContent(video.storedPath, video.title, video.description);
         video.sensitivity = analysis.result;
 
         // Finalize
