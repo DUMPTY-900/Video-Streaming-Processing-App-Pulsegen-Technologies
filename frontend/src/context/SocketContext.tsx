@@ -16,20 +16,34 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const SOCKET_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000').replace('/api', '');
 
     useEffect(() => {
-    };
-} else {
-    if (socket) {
-        socket.close();
-        setSocket(null);
-    }
+        if (token && user) {
+            // Initialize Socket
+            const newSocket = io(SOCKET_URL, {
+                auth: { token },
+                query: { userId: user._id },
+                transports: ['websocket', 'polling']
+            });
+
+            setSocket(newSocket);
+
+            // Cleanup on unmount or dependency change
+            return () => {
+                newSocket.close();
+            };
+        } else {
+            // Close socket if user logs out
+            if (socket) {
+                socket.close();
+                setSocket(null);
+            }
         }
     }, [token, user]);
 
-return (
-    <SocketContext.Provider value={{ socket }}>
-        {children}
-    </SocketContext.Provider>
-);
+    return (
+        <SocketContext.Provider value={{ socket }}>
+            {children}
+        </SocketContext.Provider>
+    );
 };
 
 export const useSocket = () => {
