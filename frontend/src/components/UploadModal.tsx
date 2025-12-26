@@ -110,16 +110,35 @@ const UploadModal: React.FC<UploadModalProps> = ({ onClose, onSuccess }) => {
                             </div>
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-slate-700 ml-1">Title</label>
                             <input
                                 type="text"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
-                                placeholder="Enter video title"
+                                className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
+                                placeholder="Give your video a catchy title"
                                 required
                             />
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-slate-700 ml-1">Category</label>
+                            <input
+                                type="text"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400"
+                                placeholder="e.g. Gaming, Vlog, Education"
+                                list="category-suggestions"
+                            />
+                            <datalist id="category-suggestions">
+                                <option value="Gaming" />
+                                <option value="Education" />
+                                <option value="Music" />
+                                <option value="Vlog" />
+                                <option value="Tech" />
+                            </datalist>
                         </div>
 
                         <div>

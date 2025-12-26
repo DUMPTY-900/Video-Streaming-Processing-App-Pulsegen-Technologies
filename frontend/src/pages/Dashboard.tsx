@@ -133,6 +133,20 @@ const Dashboard = () => {
                     <div className="flex items-center gap-4 flex-wrap">
                         {/* Filter Controls */}
                         <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
+                        >
+                            <option value="all">All Categories</option>
+                            <option value="Gaming">Gaming</option>
+                            <option value="Education">Education</option>
+                            <option value="Music">Music</option>
+                            <option value="Vlog">Vlog</option>
+                            <option value="Tech">Tech</option>
+                            <option value="General">General</option>
+                        </select>
+
+                        <select
                             value={filter}
                             onChange={(e) => setFilter(e.target.value)}
                             className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
@@ -242,8 +256,8 @@ const Dashboard = () => {
                                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100/50">
                                         <div className="flex items-center gap-2">
                                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${video.sensitivity === 'safe' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                    video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                                                        'bg-slate-50 text-slate-500 border-slate-100'
+                                                video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                                    'bg-slate-50 text-slate-500 border-slate-100'
                                                 }`}>
                                                 {video.sensitivity === 'safe' ? 'Safe' :
                                                     video.sensitivity === 'flagged' ? 'Flagged' : 'Pending'}
