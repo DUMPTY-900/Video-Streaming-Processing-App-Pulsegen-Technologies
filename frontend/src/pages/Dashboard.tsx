@@ -13,22 +13,55 @@ interface Video {
     sensitivity: string;
     processingProgress: number;
     duration: number;
+    size: number;
     createdAt: string;
+    uploader: {
+        username: string;
+    };
 }
 
 const Dashboard = () => {
+    const [videos, setVideos] = useState<Video[]>([]);
+    const { user, logout } = useAuth();
+    const { socket } = useSocket();
+    const [showUpload, setShowUpload] = useState(false);
+
+    // Advanced Filtering States
     const [filter, setFilter] = useState('all');
     const [sort, setSort] = useState('newest');
 
     useEffect(() => {
         fetchVideos();
-    }, [filter, sort]); // Re-fetch when filter/sort changes
+    }, [filter, sort]);
 
-    // ... socket handlers ... 
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('video:queued', () => {
+            fetchVideos();
+        });
+
+        socket.on('video:progress', (data: { videoId: string, progress: number, status: string }) => {
+            setVideos(prev => prev.map(v =>
+                v._id === data.videoId ? { ...v, status: data.status, processingProgress: data.progress } : v
+            ));
+        });
+
+        socket.on('video:completed', (data: { videoId: string, status: string, sensitivity: string }) => {
+            setVideos(prev => prev.map(v =>
+                v._id === data.videoId ? { ...v, status: data.status, sensitivity: data.sensitivity, processingProgress: 100 } : v
+            ));
+        });
+
+        return () => {
+            socket.off('video:queued');
+            socket.off('video:progress');
+            socket.off('video:completed');
+        };
+    }, [socket]);
 
     const fetchVideos = async () => {
         try {
-            // Updated to pass query params
             const { data } = await api.get(`/videos?sensitivity=${filter}&sort=${sort}`);
             setVideos(data);
         } catch (err) {
@@ -39,7 +72,6 @@ const Dashboard = () => {
     const isEditor = user?.roles.includes('editor') || user?.roles.includes('admin');
 
     const handleDelete = async (e: React.MouseEvent, id: string) => {
-        // ... existing handle delete ...
         e.preventDefault();
         if (window.confirm('Are you sure you want to delete this video?')) {
             try {
@@ -54,14 +86,14 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-100 to-pink-100 relative overflow-hidden transition-all duration-500">
-            {/* Decoration Blobs ... same as before ... */}
+            {/* Decoration Blobs */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
                 <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
                 <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000"></div>
             </div>
 
-            {/* Top Navigation ... same as before ... */}
+            {/* Top Navigation */}
             <nav className="bg-white/70 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -201,19 +233,25 @@ const Dashboard = () => {
 
                                         <div className="text-xs text-slate-400 mt-1 flex flex-col gap-1">
                                             <span className="flex items-center gap-1">
-                                                <span className="font-medium text-slate-500">By {(video as any).uploader?.username || 'Unknown'}</span>
+                                                <span className="font-medium text-slate-500">By {video.uploader?.username || 'Unknown'}</span>
                                             </span>
                                             <span>Added {new Date(video.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                         </div>
                                     </div>
 
                                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100/50">
-                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${video.sensitivity === 'safe' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                            video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                                                'bg-slate-50 text-slate-500 border-slate-100'
-                                            }`}>
-                                            {video.sensitivity === 'safe' ? 'Safe' :
-                                                video.sensitivity === 'flagged' ? 'Flagged' : 'Pending'}
+                                        <div className="flex items-center gap-2">
+                                            <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${video.sensitivity === 'safe' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                                    video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                                        'bg-slate-50 text-slate-500 border-slate-100'
+                                                }`}>
+                                                {video.sensitivity === 'safe' ? 'Safe' :
+                                                    video.sensitivity === 'flagged' ? 'Flagged' : 'Pending'}
+                                            </span>
+                                        </div>
+                                        {/* File Size Indicator */}
+                                        <span className="text-[10px] font-mono text-slate-400">
+                                            {(video.size / 1024 / 1024).toFixed(1)} MB
                                         </span>
                                     </div>
                                 </div>
