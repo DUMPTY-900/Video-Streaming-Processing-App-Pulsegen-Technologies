@@ -10,13 +10,10 @@ export const getVideoMetadata = (filePath: string): Promise<ffmpeg.FfprobeData> 
     });
 };
 
-// Stub for transcoding or other processing
-// In a real app, this would process the video
 export const processVideoFile = (filePath: string, outputDir: string): Promise<string> => {
     return new Promise((resolve, reject) => {
-        // Simulate processing time
         setTimeout(() => {
-            resolve(filePath); // Return original path for now
+            resolve(filePath);
         }, 2000);
     });
 };

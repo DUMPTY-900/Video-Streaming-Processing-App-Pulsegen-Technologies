@@ -30,7 +30,6 @@ export const uploadVideo = async (req: Request, res: Response) => {
             processingProgress: 0
         });
 
-        // Trigger background processing
         processVideo(video._id.toString());
 
         res.status(201).json(video);
@@ -105,7 +104,6 @@ export const streamVideo = async (req: Request, res: Response) => {
             fs.createReadStream(videoPath).pipe(res);
         }
     } catch (error) {
-        // If headers sent, we can't respond with JSON
         if (!res.headersSent) {
             res.status(500).json({ message: 'Stream error', error });
         }

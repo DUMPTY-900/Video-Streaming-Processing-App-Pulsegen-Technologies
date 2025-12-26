@@ -8,7 +8,7 @@ const Register = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('viewer');
-    const [tenantId, setTenantId] = useState(''); // Optional in UI, maybe auto-generated or input
+    const [tenantId, setTenantId] = useState('');
     const [error, setError] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();

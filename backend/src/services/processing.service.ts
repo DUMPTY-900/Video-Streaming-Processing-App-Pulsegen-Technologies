@@ -22,7 +22,7 @@ export const processVideo = async (videoId: string) => {
             // video.resolution = ...
         } catch (err) {
             console.error('FFmpeg error:', err);
-            // Continue even if metadata fails?
+
         }
 
         video.processingProgress = 30;
@@ -30,7 +30,6 @@ export const processVideo = async (videoId: string) => {
         io.emit('video:progress', { videoId, status: 'processing', progress: 30, message: 'Metadata extracted' });
 
         // Step 2: Transcoding (Simulated)
-        // We update progress to simulate work
         let progress = 30;
         const interval = setInterval(() => {
             progress += 10;

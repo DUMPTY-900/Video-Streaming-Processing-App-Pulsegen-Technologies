@@ -24,21 +24,17 @@ app.use(express.json());
 import authRoutes from './routes/auth.routes';
 import videoRoutes from './routes/video.routes';
 
-// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
 
-
-// Placeholder for routes
 app.get('/', (req, res) => {
     res.send('API is running...');
 });
 
-// Socket.io connection
 io.on('connection', (socket) => {
     console.log('New client connected', socket.id);
 
-    // Join user-specific room if auth is sent (placeholder)
+
     socket.on('join', (room) => {
         socket.join(room);
     });

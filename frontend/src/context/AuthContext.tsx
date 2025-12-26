@@ -25,8 +25,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     useEffect(() => {
         if (token) {
-            // Ideally verify token with backend, for now decode or assume valid if simpler
-            // Let's just store the user object in localstorage too for simplicity in this demo
             const storedUser = localStorage.getItem('user');
             if (storedUser) {
                 setUser(JSON.parse(storedUser));

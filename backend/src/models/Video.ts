@@ -4,13 +4,13 @@ export interface IVideo extends Document {
     title: string;
     description: string;
     originalFilename: string;
-    storedPath: string; // Path on disk
+    storedPath: string;
     mimeType: string;
     size: number;
-    duration: number; // in seconds
+    duration: number;
     status: 'uploaded' | 'processing' | 'processed' | 'failed';
     sensitivity: 'safe' | 'flagged' | 'unknown';
-    processingProgress: number; // 0-100
+    processingProgress: number;
     uploader: mongoose.Types.ObjectId;
     tenantId: string;
 }

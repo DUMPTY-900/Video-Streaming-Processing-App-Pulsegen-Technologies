@@ -15,7 +15,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     useEffect(() => {
         if (token && user) {
             const newSocket = io('http://localhost:5000', {
-                auth: { token }, // Can pass token here
+                auth: { token },
                 query: { userId: user._id }
             });
 
