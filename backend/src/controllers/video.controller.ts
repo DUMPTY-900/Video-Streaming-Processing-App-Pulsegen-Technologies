@@ -43,7 +43,9 @@ export const uploadVideo = async (req: Request, res: Response) => {
 // @access  Private
 export const getVideos = async (req: Request, res: Response) => {
     try {
-        const videos = await Video.find({ tenantId: req.user?.tenantId }).sort({ createdAt: -1 });
+        const videos = await Video.find({ tenantId: req.user?.tenantId })
+            .sort({ createdAt: -1 })
+            .populate('uploader', 'username');
         res.json(videos);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });

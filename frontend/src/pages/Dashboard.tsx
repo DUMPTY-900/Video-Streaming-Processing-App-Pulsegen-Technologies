@@ -198,7 +198,10 @@ const Dashboard = () => {
                                             )}
                                         </div>
 
-                                        <div className="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                                        <div className="text-xs text-slate-400 mt-1 flex flex-col gap-1">
+                                            <span className="flex items-center gap-1">
+                                                <span className="font-medium text-slate-500">By {(video as any).uploader?.username || 'Unknown'}</span>
+                                            </span>
                                             <span>Added {new Date(video.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                         </div>
                                     </div>
