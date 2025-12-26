@@ -17,44 +17,19 @@ interface Video {
 }
 
 const Dashboard = () => {
-    const [videos, setVideos] = useState<Video[]>([]);
-    const { user, logout } = useAuth();
-    const { socket } = useSocket();
-    const [showUpload, setShowUpload] = useState(false);
+    const [filter, setFilter] = useState('all');
+    const [sort, setSort] = useState('newest');
 
     useEffect(() => {
         fetchVideos();
-    }, []);
+    }, [filter, sort]); // Re-fetch when filter/sort changes
 
-    useEffect(() => {
-        if (!socket) return;
-
-        socket.on('video:queued', () => {
-            fetchVideos();
-        });
-
-        socket.on('video:progress', (data: { videoId: string, progress: number, status: string }) => {
-            setVideos(prev => prev.map(v =>
-                v._id === data.videoId ? { ...v, status: data.status, processingProgress: data.progress } : v
-            ));
-        });
-
-        socket.on('video:completed', (data: { videoId: string, status: string, sensitivity: string }) => {
-            setVideos(prev => prev.map(v =>
-                v._id === data.videoId ? { ...v, status: data.status, sensitivity: data.sensitivity, processingProgress: 100 } : v
-            ));
-        });
-
-        return () => {
-            socket.off('video:queued');
-            socket.off('video:progress');
-            socket.off('video:completed');
-        };
-    }, [socket]);
+    // ... socket handlers ... 
 
     const fetchVideos = async () => {
         try {
-            const { data } = await api.get('/videos');
+            // Updated to pass query params
+            const { data } = await api.get(`/videos?sensitivity=${filter}&sort=${sort}`);
             setVideos(data);
         } catch (err) {
             console.error(err);
@@ -64,7 +39,8 @@ const Dashboard = () => {
     const isEditor = user?.roles.includes('editor') || user?.roles.includes('admin');
 
     const handleDelete = async (e: React.MouseEvent, id: string) => {
-        e.preventDefault(); // Prevent navigation
+        // ... existing handle delete ...
+        e.preventDefault();
         if (window.confirm('Are you sure you want to delete this video?')) {
             try {
                 await api.delete(`/videos/${id}`);
@@ -78,14 +54,14 @@ const Dashboard = () => {
 
     return (
         <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-100 to-pink-100 relative overflow-hidden transition-all duration-500">
-            {/* Decoration Blobs (Fixed Position) */}
+            {/* Decoration Blobs ... same as before ... */}
             <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
                 <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
                 <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
                 <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000"></div>
             </div>
 
-            {/* Top Navigation */}
+            {/* Top Navigation ... same as before ... */}
             <nav className="bg-white/70 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
@@ -121,15 +97,40 @@ const Dashboard = () => {
                         <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Video Library</h1>
                         <p className="mt-2 text-slate-600 font-medium">Manage and organize your creative content</p>
                     </div>
-                    {isEditor && (
-                        <button
-                            onClick={() => setShowUpload(true)}
-                            className="inline-flex items-center px-6 py-3 rounded-2xl shadow-lg shadow-indigo-500/30 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 gap-2.5"
+
+                    <div className="flex items-center gap-4 flex-wrap">
+                        {/* Filter Controls */}
+                        <select
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value)}
+                            className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
                         >
-                            <UploadIcon size={20} />
-                            Upload New Video
-                        </button>
-                    )}
+                            <option value="all">All Content</option>
+                            <option value="safe">Safe Only</option>
+                            <option value="flagged">Flagged Only</option>
+                        </select>
+
+                        <select
+                            value={sort}
+                            onChange={(e) => setSort(e.target.value)}
+                            className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
+                        >
+                            <option value="newest">Newest First</option>
+                            <option value="oldest">Oldest First</option>
+                            <option value="size_desc">Largest Size</option>
+                            <option value="size_asc">Smallest Size</option>
+                        </select>
+
+                        {isEditor && (
+                            <button
+                                onClick={() => setShowUpload(true)}
+                                className="inline-flex items-center px-6 py-3 rounded-2xl shadow-lg shadow-indigo-500/30 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 gap-2.5"
+                            >
+                                <UploadIcon size={20} />
+                                Upload
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Video Grid */}

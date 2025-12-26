@@ -38,14 +38,34 @@ export const uploadVideo = async (req: Request, res: Response) => {
     }
 };
 
-// @desc    Get all videos
+// @desc    Get all videos (with Filtering & Sorting)
 // @route   GET /api/videos
 // @access  Private
 export const getVideos = async (req: Request, res: Response) => {
     try {
-        const videos = await Video.find({ tenantId: req.user?.tenantId })
-            .sort({ createdAt: -1 })
+        const { sensitivity, sort } = req.query;
+
+        // Build Filter Object
+        let query: any = { tenantId: req.user?.tenantId };
+        if (sensitivity && sensitivity !== 'all') {
+            query.sensitivity = sensitivity;
+        }
+
+        // Build Sort Object
+        let sortOption: any = { createdAt: -1 }; // Default: Newest first
+        if (sort === 'oldest') sortOption = { createdAt: 1 };
+        if (sort === 'size_desc') sortOption = { size: -1 };
+        if (sort === 'size_asc') sortOption = { size: 1 };
+        if (sort === 'duration_desc') sortOption = { duration: -1 };
+
+        const videos = await Video.find(query)
+            .sort(sortOption)
             .populate('uploader', 'username');
+
+        // Performance Optimization: Caching Strategy
+        // Cache this response for 30 seconds to reduce DB load
+        res.set('Cache-Control', 'public, max-age=30');
+
         res.json(videos);
     } catch (error) {
         res.status(500).json({ message: 'Server error', error });
@@ -80,7 +100,6 @@ export const streamVideo = async (req: Request, res: Response) => {
 
         const videoPath = video.storedPath;
 
-        // Check if file actually exists (handling ephemeral storage wipes)
         if (!fs.existsSync(videoPath)) {
             return res.status(404).json({
                 message: 'Video file not found. It may have been deleted due to server restart (Ephemeral Storage).'
