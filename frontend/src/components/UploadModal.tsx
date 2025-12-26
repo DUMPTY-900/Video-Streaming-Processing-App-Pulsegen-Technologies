@@ -11,6 +11,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ onClose, onSuccess }) => {
     const [file, setFile] = useState<File | null>(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [category, setCategory] = useState('');
     const [progress, setProgress] = useState(0);
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState('');
@@ -30,6 +31,7 @@ const UploadModal: React.FC<UploadModalProps> = ({ onClose, onSuccess }) => {
         formData.append('video', file!);
         formData.append('title', title);
         formData.append('description', description);
+        formData.append('category', category);
 
         try {
             await api.post('/videos', formData, {

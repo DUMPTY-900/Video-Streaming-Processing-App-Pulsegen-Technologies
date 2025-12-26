@@ -15,6 +15,7 @@ interface Video {
     duration: number;
     size: number;
     createdAt: string;
+    category?: string;
     uploader: {
         username: string;
     };
@@ -29,10 +30,11 @@ const Dashboard = () => {
     // Advanced Filtering States
     const [filter, setFilter] = useState('all');
     const [sort, setSort] = useState('newest');
+    const [category, setCategory] = useState('all');
 
     useEffect(() => {
         fetchVideos();
-    }, [filter, sort]);
+    }, [filter, sort, category]);
 
     useEffect(() => {
         if (!socket) return;
@@ -62,7 +64,7 @@ const Dashboard = () => {
 
     const fetchVideos = async () => {
         try {
-            const { data } = await api.get(`/videos?sensitivity=${filter}&sort=${sort}`);
+            const { data } = await api.get(`/videos?sensitivity=${filter}&sort=${sort}&category=${category}`);
             setVideos(data);
         } catch (err) {
             console.error(err);
@@ -132,40 +134,42 @@ const Dashboard = () => {
 
                     <div className="flex items-center gap-4 flex-wrap">
                         {/* Filter Controls */}
-                        <select
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value)}
-                            className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
-                        >
-                            <option value="all">All Categories</option>
-                            <option value="Gaming">Gaming</option>
-                            <option value="Education">Education</option>
-                            <option value="Music">Music</option>
-                            <option value="Vlog">Vlog</option>
-                            <option value="Tech">Tech</option>
-                            <option value="General">General</option>
-                        </select>
+                        <div className="flex items-center gap-2">
+                            <select
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
+                            >
+                                <option value="all">All Categories</option>
+                                <option value="Gaming">Gaming</option>
+                                <option value="Education">Education</option>
+                                <option value="Music">Music</option>
+                                <option value="Vlog">Vlog</option>
+                                <option value="Tech">Tech</option>
+                                <option value="General">General</option>
+                            </select>
 
-                        <select
-                            value={filter}
-                            onChange={(e) => setFilter(e.target.value)}
-                            className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
-                        >
-                            <option value="all">All Content</option>
-                            <option value="safe">Safe Only</option>
-                            <option value="flagged">Flagged Only</option>
-                        </select>
+                            <select
+                                value={filter}
+                                onChange={(e) => setFilter(e.target.value)}
+                                className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
+                            >
+                                <option value="all">All content</option>
+                                <option value="safe">Safe Only</option>
+                                <option value="flagged">Flagged Only</option>
+                            </select>
 
-                        <select
-                            value={sort}
-                            onChange={(e) => setSort(e.target.value)}
-                            className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
-                        >
-                            <option value="newest">Newest First</option>
-                            <option value="oldest">Oldest First</option>
-                            <option value="size_desc">Largest Size</option>
-                            <option value="size_asc">Smallest Size</option>
-                        </select>
+                            <select
+                                value={sort}
+                                onChange={(e) => setSort(e.target.value)}
+                                className="bg-white/50 border border-slate-200 text-slate-700 text-sm rounded-xl focus:ring-indigo-500 focus:border-indigo-500 block p-2.5 outline-none shadow-sm cursor-pointer hover:bg-white/80 transition-colors"
+                            >
+                                <option value="newest">Newest First</option>
+                                <option value="oldest">Oldest First</option>
+                                <option value="size_desc">Largest Size</option>
+                                <option value="size_asc">Smallest Size</option>
+                            </select>
+                        </div>
 
                         {isEditor && (
                             <button
@@ -247,7 +251,9 @@ const Dashboard = () => {
 
                                         <div className="text-xs text-slate-400 mt-1 flex flex-col gap-1">
                                             <span className="flex items-center gap-1">
-                                                <span className="font-medium text-slate-500">By {video.uploader?.username || 'Unknown'}</span>
+                                                <span className="font-medium text-slate-500">By {(video as any).uploader?.username || 'Unknown'}</span>
+                                                <span className="text-slate-300">•</span>
+                                                <span className="text-indigo-500 font-medium">{video.category || 'General'}</span>
                                             </span>
                                             <span>Added {new Date(video.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
                                         </div>
@@ -256,8 +262,8 @@ const Dashboard = () => {
                                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100/50">
                                         <div className="flex items-center gap-2">
                                             <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${video.sensitivity === 'safe' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                                video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
-                                                    'bg-slate-50 text-slate-500 border-slate-100'
+                                                    video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                                        'bg-slate-50 text-slate-500 border-slate-100'
                                                 }`}>
                                                 {video.sensitivity === 'safe' ? 'Safe' :
                                                     video.sensitivity === 'flagged' ? 'Flagged' : 'Pending'}
