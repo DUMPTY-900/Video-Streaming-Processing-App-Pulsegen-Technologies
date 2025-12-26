@@ -30,7 +30,6 @@ const Dashboard = () => {
         if (!socket) return;
 
         socket.on('video:queued', () => {
-            // Optimistically update or re-fetch
             fetchVideos();
         });
 
@@ -65,27 +64,34 @@ const Dashboard = () => {
     const isEditor = user?.roles.includes('editor') || user?.roles.includes('admin');
 
     return (
-        <div className="min-h-screen bg-slate-50">
+        <div className="min-h-screen bg-linear-to-br from-indigo-100 via-purple-100 to-pink-100 relative overflow-hidden transition-all duration-500">
+            {/* Decoration Blobs (Fixed Position) */}
+            <div className="fixed top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-0">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob"></div>
+                <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-2000"></div>
+                <div className="absolute -bottom-8 left-1/2 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-40 animate-blob animation-delay-4000"></div>
+            </div>
+
             {/* Top Navigation */}
-            <nav className="bg-white border-b border-gray-200 sticky top-0 z-20">
+            <nav className="bg-white/70 backdrop-blur-xl border-b border-white/20 sticky top-0 z-50 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex items-center">
                             <div className="flex-shrink-0 flex items-center gap-2">
-                                <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-                                    <Play size={20} className="text-white fill-current" />
+                                <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                                    <Play size={22} className="text-white fill-current ml-0.5" />
                                 </div>
-                                <span className="font-bold text-xl text-gray-900 tracking-tight">StreamFlow</span>
+                                <span className="font-bold text-xl text-slate-800 tracking-tight">StreamFlow</span>
                             </div>
                         </div>
                         <div className="flex items-center gap-6">
                             <div className="flex flex-col items-end hidden sm:flex">
-                                <span className="text-sm font-medium text-gray-900">{user?.username}</span>
-                                <span className="text-xs text-gray-500 uppercase tracking-wide">{user?.roles[0]}</span>
+                                <span className="text-sm font-semibold text-slate-700">{user?.username}</span>
+                                <span className="text-xs text-indigo-600 uppercase tracking-wider font-bold bg-indigo-50 px-2 py-0.5 rounded-full">{user?.roles[0]}</span>
                             </div>
                             <button
                                 onClick={logout}
-                                className="p-2 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition duration-200"
+                                className="p-2.5 rounded-full text-slate-500 hover:text-red-500 hover:bg-red-50 transition-all duration-200 hover:shadow-md"
                                 title="Sign Out"
                             >
                                 <LogOut size={20} />
@@ -95,19 +101,19 @@ const Dashboard = () => {
                 </div>
             </nav>
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6 glass-panel p-6 rounded-3xl bg-white/40 backdrop-blur-lg border border-white/40 shadow-xl">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Video Library</h1>
-                        <p className="mt-1 text-sm text-gray-500">Manage and view your organization's content</p>
+                        <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Video Library</h1>
+                        <p className="mt-2 text-slate-600 font-medium">Manage and organize your creative content</p>
                     </div>
                     {isEditor && (
                         <button
                             onClick={() => setShowUpload(true)}
-                            className="inline-flex items-center px-5 py-2.5 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 hover:shadow-indigo-500/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 gap-2 transform hover:-translate-y-0.5"
+                            className="inline-flex items-center px-6 py-3 rounded-2xl shadow-lg shadow-indigo-500/30 text-sm font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-500/40 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 gap-2.5"
                         >
-                            <UploadIcon size={18} />
+                            <UploadIcon size={20} />
                             Upload New Video
                         </button>
                     )}
@@ -115,67 +121,68 @@ const Dashboard = () => {
 
                 {/* Video Grid */}
                 {videos.length === 0 ? (
-                    <div className="text-center py-20 bg-white rounded-2xl border border-dashed border-gray-300">
-                        <div className="mx-auto h-12 w-12 text-gray-400">
-                            <Play size={48} strokeWidth={1} />
+                    <div className="text-center py-24 bg-white/50 backdrop-blur-md rounded-3xl border border-white/50 shadow-lg">
+                        <div className="mx-auto h-20 w-20 bg-indigo-50 rounded-full flex items-center justify-center mb-6">
+                            <Play size={40} className="text-indigo-400 ml-1" strokeWidth={1.5} />
                         </div>
-                        <h3 className="mt-2 text-sm font-medium text-gray-900">No videos yet</h3>
-                        <p className="mt-1 text-sm text-gray-500">Get started by uploading a new video.</p>
+                        <h3 className="text-xl font-bold text-slate-800">No videos yet</h3>
+                        <p className="mt-2 text-slate-500 max-w-sm mx-auto">Your library is currently empty. Upload your first video to get started.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                         {videos.map((video) => (
-                            <div key={video._id} className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-indigo-100 transition-all duration-300 flex flex-col">
+                            <div key={video._id} className="group bg-white/70 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 overflow-hidden hover:shadow-2xl hover:bg-white/90 transition-all duration-300 transform hover:-translate-y-1 flex flex-col">
                                 {/* Thumbnail/Status Area */}
-                                <div className="aspect-video bg-gray-100 relative overflow-hidden group-hover:scale-[1.02] transition-transform duration-300">
+                                <div className="aspect-video bg-slate-200 relative overflow-hidden group-hover:shadow-inner">
                                     {video.status === 'processed' ? (
-                                        <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">
-                                            {/* Simulate Thumbnail (would normally be an image) */}
-                                            <div className="absolute inset-0 opacity-20 bg-gradient-to-tr from-indigo-500 to-purple-500"></div>
-                                            <Link to={`/videos/${video._id}`} className="relative z-10 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/40 hover:scale-110 transition-all duration-200">
-                                                <Play size={24} className="ml-1 fill-current" />
+                                        <div className="absolute inset-0 bg-slate-900 flex items-center justify-center group">
+                                            {/* Gradient Overlay */}
+                                            <div className="absolute inset-0 opacity-40 bg-gradient-to-tr from-indigo-900 to-purple-800 mix-blend-overlay"></div>
+
+                                            <Link to={`/videos/${video._id}`} className="relative z-10 w-14 h-14 bg-white/10 backdrop-blur-md border border-white/20 rounded-full flex items-center justify-center text-white transition-all duration-300 group-hover:scale-110 group-hover:bg-white/20 shadow-xl">
+                                                <Play size={28} className="ml-1 fill-white" />
                                             </Link>
-                                            <span className="absolute bottom-2 right-2 px-2 py-1 bg-black/60 backdrop-blur-md rounded text-xs text-white font-mono">
+                                            <span className="absolute bottom-3 right-3 px-2 py-1 bg-black/40 backdrop-blur-md border border-white/10 rounded-lg text-[10px] text-white font-bold tracking-wider">
                                                 HD
                                             </span>
                                         </div>
                                     ) : (
-                                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-gray-50">
-                                            <div className="w-full max-w-[120px] mb-3">
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 bg-slate-50">
+                                            <div className="w-full max-w-[120px] mb-4">
                                                 {video.status === 'processing' ? (
-                                                    <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-                                                        <div className="h-full bg-indigo-500 rounded-full transition-all duration-500" style={{ width: `${video.processingProgress}%` }}></div>
+                                                    <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                                                        <div className="h-full bg-indigo-500 rounded-full transition-all duration-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]" style={{ width: `${video.processingProgress}%` }}></div>
                                                     </div>
                                                 ) : (
-                                                    <div className="h-10 w-10 text-gray-300 mx-auto">
-                                                        <UploadIcon size={40} strokeWidth={1.5} />
+                                                    <div className="h-12 w-12 text-slate-300 mx-auto animate-pulse">
+                                                        <UploadIcon size={48} strokeWidth={1} />
                                                     </div>
                                                 )}
                                             </div>
-                                            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{video.status}</span>
-                                            {video.status === 'processing' && <span className="text-xs text-indigo-500 mt-1">{Math.round(video.processingProgress)}%</span>}
+                                            <span className="text-xs font-bold text-indigo-500 uppercase tracking-widest">{video.status}</span>
+                                            {video.status === 'processing' && <span className="text-xs text-slate-500 mt-1 font-mono">{Math.round(video.processingProgress)}%</span>}
                                         </div>
                                     )}
                                 </div>
 
                                 {/* Content */}
                                 <div className="p-5 flex-1 flex flex-col">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h3 className="font-bold text-gray-900 line-clamp-1 group-hover:text-indigo-600 transition-colors" title={video.title}>
+                                    <div className="mb-3">
+                                        <h3 className="font-bold text-slate-800 text-lg line-clamp-1 group-hover:text-indigo-600 transition-colors" title={video.title}>
                                             {video.title || 'Untitled Video'}
                                         </h3>
+                                        <div className="text-xs text-slate-400 mt-1 flex items-center gap-1">
+                                            <span>Added {new Date(video.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+                                        </div>
                                     </div>
 
-                                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-gray-50">
-                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${video.sensitivity === 'safe' ? 'bg-green-100 text-green-800' :
-                                                video.sensitivity === 'flagged' ? 'bg-red-100 text-red-800' :
-                                                    'bg-gray-100 text-gray-800'
+                                    <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100/50">
+                                        <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide border ${video.sensitivity === 'safe' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                                video.sensitivity === 'flagged' ? 'bg-rose-50 text-rose-600 border-rose-100' :
+                                                    'bg-slate-50 text-slate-500 border-slate-100'
                                             }`}>
-                                            {video.sensitivity === 'safe' ? 'Safe Content' :
-                                                video.sensitivity === 'flagged' ? 'Flagged' : 'Pending Review'}
-                                        </span>
-                                        <span className="text-xs text-gray-400">
-                                            {new Date(video.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                            {video.sensitivity === 'safe' ? 'Safe' :
+                                                video.sensitivity === 'flagged' ? 'Flagged' : 'Pending'}
                                         </span>
                                     </div>
                                 </div>
